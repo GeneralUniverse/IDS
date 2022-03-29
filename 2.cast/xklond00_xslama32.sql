@@ -162,7 +162,50 @@ CREATE TABLE nabidka_ke_koupi
 );
 
 INSERT INTO zamestnanec
-VALUES (default, 'josef', TO_DATE('2022-04-20', 'yyyy/mm/dd'), '2.2.2020', 'generalni reditel');
+VALUES (default, 'Josef Novák', TO_DATE('2022-04-20', 'yyyy/mm/dd'), '2.2.2020', 'generalni reditel');
 INSERT INTO zamestnanec
-VALUES (default, 'josef', '1.1.2020', '2.2.2020', 'generalni reditel');
-select * FROM zamestnanec;
+VALUES (default, 'Erik Malina', '2-1-2019', '5.12.2021', 'delnik');
+INSERT INTO zamestnanec
+VALUES (default, 'Dominik Krátký', '6-1-2019', '7.2.2020', 'uklizec');
+
+INSERT INTO zakaznik
+VALUES (DEFAULT, 'Emil Houba','emil@houba.cz','608233610','xEmil00','bf334e5e36c768f5191ae384ed809d105ba3c4b8bc7d59b856d43da7ec148758');
+INSERT INTO zakaznik
+VALUES (DEFAULT, 'Jana černochová','jana.cernochova@mo.cz','+420 225 200 400','xJanaObrana00','504e96ff7de999afa6b71721456f78a3f2ecdbb43f20a5b9c85ebbb39b9bc40c');
+INSERT INTO zakaznik
+VALUES (DEFAULT, 'Karolína Pepsi','kajicka@kocicka.cz','+420 2544 655 887','xKaja44','f3451762d2d128b241bf02a70b2232c9ddbd227a6f368b66c6ace938957d9141');
+
+INSERT INTO zakaznik_s_radnym_uctem
+VALUES (DEFAULT, 'Karolína Jahoda','jahoda@lahoda.cz','+420 7777 655 887','xKaja74','dbb132499c9a8cc3564d9af28a3a73cd12e6944612b26d7ff5df5aa20ff4f14f','nove smrky 155','fyzicka osoba');
+INSERT INTO zakaznik_s_radnym_uctem
+VALUES (DEFAULT, 'Josef Omanek','josef@joseph.cz','+420 54 655 887','xKaja74','c3564d9af28a3a73cd12e6944612b26d7ff5df5aa20ff4f14f','nove smrky 155','fyzicka osoba');
+
+INSERT INTO nemovitost
+VALUES (default, 'chata', 84, 'praha 8', 25000000.99, 'je to v centru prahy', 1, 1, 1);
+INSERT INTO nemovitost
+VALUES (default, 'dum', 152, 'brno', 250000.99, 'je to na kralove poli.', 2, 2, 1);
+INSERT INTO nemovitost
+VALUES (default, 'byt', 42, 'uhersky brod', 2500.98, 'je to v centru brodu', 1, 2, 3);
+
+INSERT INTO kupni_smlouva
+VALUES  (DEFAULT,'4.4.2019','uzavrena','Koupite nemovitost c.3 za 250000kc',2,2,3);
+INSERT INTO kupni_smlouva
+VALUES  (DEFAULT,NULL,'neuzavrena','Koupite nemovitost c.2 za 11111kc',2,1,1);
+
+INSERT INTO zadost_o_prohlidku
+VALUES (DEFAULT,'2.5.2022',CURRENT_TIMESTAMP,'ne',2,2);
+INSERT INTO zadost_o_prohlidku
+VALUES (DEFAULT,'2.7.2020',CURRENT_TIMESTAMP,'ano',1,3);
+
+INSERT INTO nabidka_ke_koupi
+VALUES (DEFAULT,5000000,current_timestamp,3,3);
+INSERT INTO nabidka_ke_koupi
+VALUES (DEFAULT,125000,current_timestamp,1,2);
+
+-- select * FROM zamestnanec;
+-- select * FROM zakaznik;
+-- select * FROM zakaznik_s_radnym_uctem;
+-- select * FROM nemovitost;
+-- select * FROM zadost_o_prohlidku;
+-- select * FROM nabidka_ke_koupi;
+-- select * FROM kupni_smlouva;
