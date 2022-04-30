@@ -316,6 +316,7 @@ BEGIN show_offers_stats(1); END;
 -- Nemovitost cislo 5 neexistuje, proto vyhodi chybu
 BEGIN show_offers_stats(5); END;
 
+
 -- Procedura zmeni jmeno a heslo vybraneho zakaznika
 CREATE OR REPLACE PROCEDURE change_login
     (
@@ -340,5 +341,10 @@ BEGIN
     END LOOP;
     CLOSE cursor_zakaznici;
 END;
-    BEGIN change_login(4, 'xAnton13','ahoj' ); END;
+
+-- predvedeni funkcionality procedury "change_login"
+-- pred zmenou
+SELECT * FROM zakaznici;
+BEGIN change_login(4, 'xklond00','supertajneheslo' ); END;
+-- po zmene
 SELECT * FROM zakaznici;
