@@ -158,7 +158,7 @@ CREATE TABLE nabidky_ke_koupi
 
 -- pokud insertujeme heslo kratsi nez 12 znaku prida k nemu sugar a zahashuje, pokud je delsi tak pouze zahashuje
 CREATE OR REPLACE TRIGGER make_password_safe
-        BEFORE INSERT ON zakaznici
+        BEFORE INSERT OR UPDATE ON zakaznici
         FOR EACH ROW
 DECLARE
          sugar VARCHAR(256);
@@ -178,7 +178,7 @@ BEGIN
 END;
 /
 
--- zmena stavu smlouvy podle datumu uzavreni, pokud po, tak uzavrena, pokud pred, neuzavrena a pokud neurceny datum tak neuzavrena
+-- zmena stavu smlouvy podle datumu uzavreni, pokud po, tak uzavrena, pokud pred, tak neuzavrena a pokud neurceny datum tak neuzavrena
 CREATE OR REPLACE TRIGGER zmena_stavu
     BEFORE INSERT OR UPDATE ON kupni_smlouvy
     FOR EACH ROW
@@ -250,7 +250,7 @@ VALUES (DEFAULT, 125000, CURRENT_TIMESTAMP, 1, 1);
 
 -- PROCEDURES --------------------------------------------------------------------------------
 
---procedure vypise statistiku nabidek k vybrane nemovitosti
+-- procedure vypise statistiku nabidek k vybrane nemovitosti
 -- nejvyssi, nejnizsi nabidku, prumer nabidek a pocet nabidek
 CREATE OR REPLACE PROCEDURE show_offers_stats
     (selected_id_nemovitosti IN INT)
@@ -311,5 +311,34 @@ BEGIN
 END;
 /
 
+-- Chceme ukazat statistiky nabidek k nemovisti cislo jedna
 BEGIN show_offers_stats(1); END;
-/
+-- Nemovitost cislo 5 neexistuje, proto vyhodi chybu
+BEGIN show_offers_stats(5); END;
+
+-- Procedura zmeni jmeno a heslo vybraneho zakaznika
+CREATE OR REPLACE PROCEDURE change_login
+    (
+    selected_customer_id IN NUMBER,
+    new_login IN zakaznici.login%TYPE,
+    new_password IN zakaznici.heslo%TYPE
+    )
+    AS
+    CURSOR cursor_zakaznici IS SELECT zakaznici.zakaznici_id from zakaznici;
+    customer_id zakaznici.zakaznici_id%TYPE;
+BEGIN
+    OPEN cursor_zakaznici;
+    LOOP
+        FETCH cursor_zakaznici INTO customer_id;
+        EXIT WHEN cursor_zakaznici%NOTFOUND;
+        IF (customer_id = selected_customer_id) THEN
+            UPDATE XKLOND00.zakaznici SET
+                                login = new_login,
+                                heslo = new_password WHERE ZAKAZNICI_ID = customer_id; -- trigger "make_password_safe" automaticky zmeni heslo na hash
+        END IF;
+
+    END LOOP;
+    CLOSE cursor_zakaznici;
+END;
+    BEGIN change_login(4, 'xAnton13','ahoj' ); END;
+SELECT * FROM zakaznici;
