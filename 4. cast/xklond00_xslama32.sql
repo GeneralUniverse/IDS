@@ -394,12 +394,23 @@ SELECT * FROM TABLE(DBMS_XPLAN.DISPLAY);
 
 -- MATERIALIZED VIEW ------------------------------------------------------------------------------------
 
+
+DROP MATERIALIZED VIEW pohled;
+
 -- Jaké žádosti o prohlídku podali daní zákazníci? Chceme ID a jmeno zakaznika, ID a polohu zadane nemovitosti, pozadovany cas
 -- prohlidky a zda prohlidka probehla.
-DROP MATERIALIZED VIEW pohled;
 CREATE MATERIALIZED VIEW pohled
     BUILD IMMEDIATE REFRESH COMPLETE AS
     SELECT zakaznici_id, jmeno, nemovitosti_ID, poloha, pozadovany_datum_a_cas_prohlidky, probehla FROM XKLOND00.zadosti_o_prohlidku zad
     JOIN XKLOND00.zakaznici zak ON zad.zakaznici = zak.zakaznici_id
     JOIN XKLOND00.nemovitosti nem ON zad.nemovitosti = nem.nemovitosti_ID
     ORDER BY zakaznici_id ASC;
+
+-- vypis z materialized view
+SELECT * FROM pohled;
+
+-- updatujeme hodnoty v tabulce kterou pouziva materialized view
+UPDATE zakaznici SET zakaznici_id = 2 WHERE zakaznici_id = 1;
+
+-- hodnoty v materialized view se nezmenili, jelikoz data v materialized view se po jeho provedeni ulozi do separatni tabulky
+SELECT * FROM pohled;
