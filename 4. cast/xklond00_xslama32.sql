@@ -354,12 +354,14 @@ SELECT * FROM zakaznici;
 GRANT ALL on zakaznici_s_radnym_uctem TO XSLAMA32;
 GRANT ALL ON nemovitosti TO XSLAMA32;
 GRANT ALL  ON kupni_smlouvy TO XSLAMA32;
-GRANT DELETE ON zamestnanci TO XSLAMA32;
-GRANT INSERT ON zakaznici TO XSLAMA32;
-GRANT REFERENCES ON zadosti_o_prohlidku TO XSLAMA32;
-GRANT SELECT ON nabidky_ke_koupi TO XSLAMA32;
+GRANT ALL ON zamestnanci TO XSLAMA32;
+GRANT ALL ON zakaznici TO XSLAMA32;
+GRANT ALL ON zadosti_o_prohlidku TO XSLAMA32;
+GRANT ALL ON nabidky_ke_koupi TO XSLAMA32;
+GRANT ALL ON pohled TO XSLAMA32;
 GRANT EXECUTE ON change_login TO XSLAMA32;
 GRANT  EXECUTE ON show_offers_stats TO XSLAMA32;
+
 
 
 DROP INDEX nemov_podle_vlastnika;
@@ -367,6 +369,7 @@ DROP INDEX zak_podle_rad_uctu;
 
 -- EXPLAIN PLAN ---------------------------------------------------------------------------------------------------
 
+-- Jaký majetek v nemovitostech má daný zákazník? Chceme ID a jmeno zakaznika a sumu jeho majetku.
 EXPLAIN PLAN FOR
 SELECT zakaznici_id, jmeno, SUM(cena) majetek FROM nemovitosti nem
     JOIN zakaznici_s_radnym_uctem zakr ON nem.vlastnik = zakr.zakaznici_id_s_radnym_uctem_id
@@ -388,3 +391,15 @@ SELECT zakaznici_id, jmeno, SUM(cena) majetek FROM nemovitosti nem
 
 --explain plan po optimalizaci
 SELECT * FROM TABLE(DBMS_XPLAN.DISPLAY);
+
+-- MATERIALIZED VIEW ------------------------------------------------------------------------------------
+
+-- Jaké žádosti o prohlídku podali daní zákazníci? Chceme ID a jmeno zakaznika, ID a polohu zadane nemovitosti, pozadovany cas
+-- prohlidky a zda prohlidka probehla.
+DROP MATERIALIZED VIEW pohled;
+CREATE MATERIALIZED VIEW pohled
+    BUILD IMMEDIATE REFRESH COMPLETE AS
+    SELECT zakaznici_id, jmeno, nemovitosti_ID, poloha, pozadovany_datum_a_cas_prohlidky, probehla FROM XKLOND00.zadosti_o_prohlidku zad
+    JOIN XKLOND00.zakaznici zak ON zad.zakaznici = zak.zakaznici_id
+    JOIN XKLOND00.nemovitosti nem ON zad.nemovitosti = nem.nemovitosti_ID
+    ORDER BY zakaznici_id ASC;
