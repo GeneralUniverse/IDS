@@ -364,10 +364,12 @@ GRANT  EXECUTE ON show_offers_stats TO XSLAMA32;
 
 
 
+
+
+-- EXPLAIN PLAN + INDEXES ---------------------------------------------------------------------------------------------------
+
 DROP INDEX nemov_podle_vlastnika;
 DROP INDEX zak_podle_rad_uctu;
-
--- EXPLAIN PLAN ---------------------------------------------------------------------------------------------------
 
 -- Jaký majetek v nemovitostech má daný zákazník? Chceme ID a jmeno zakaznika a sumu jeho majetku.
 EXPLAIN PLAN FOR
@@ -410,7 +412,7 @@ CREATE MATERIALIZED VIEW pohled
 SELECT * FROM pohled;
 
 -- updatujeme hodnoty v tabulce kterou pouziva materialized view
-UPDATE zakaznici SET jmeno = 'supermario' WHERE zakaznici_id = 1;
+UPDATE zakaznici SET jmeno = 'supermario' WHERE zakaznici_id = 2;
 
 -- hodnoty v materialized view se nezmenili, jelikoz data v materialized view se po jeho provedeni ulozi do separatni tabulky
 SELECT * FROM pohled;
