@@ -410,7 +410,7 @@ CREATE MATERIALIZED VIEW pohled
 SELECT * FROM pohled;
 
 -- updatujeme hodnoty v tabulce kterou pouziva materialized view
-UPDATE zakaznici SET zakaznici_id = 2 WHERE zakaznici_id = 1;
+UPDATE zakaznici SET jmeno = 'supermario' WHERE zakaznici_id = 1;
 
 -- hodnoty v materialized view se nezmenili, jelikoz data v materialized view se po jeho provedeni ulozi do separatni tabulky
 SELECT * FROM pohled;
