@@ -203,33 +203,19 @@ INSERT INTO nabidky_ke_koupi
 VALUES (DEFAULT, 125000, CURRENT_TIMESTAMP, 1, 2);
 
 
--- SELECT *
--- FROM zamestnanci;
--- SELECT *
--- FROM zakaznici;
--- SELECT *
--- FROM zakaznici_s_radnym_uctem;
--- SELECT *
--- FROM nemovitosti;
--- SELECT *
--- FROM zadosti_o_prohlidku;
--- SELECT *
--- FROM nabidky_ke_koupi;
--- SELECT *
--- FROM kupni_smlouvy;
-
--- Kde bydlí daní zákazníci s řádným účtem?
-SELECT jmeno, adresa FROM zakaznici
+-- Kde bydlí daní zákazníci s řádným účtem? Chceme jejich ID, jméno a adresu.
+SELECT zakaznici_id, jmeno, adresa FROM zakaznici
     JOIN zakaznici_s_radnym_uctem
     ON zakaznici.zakaznici_s_radnym_uctem_fk = zakaznici_s_radnym_uctem.zakaznici_id_s_radnym_uctem_id;
 
--- Je uzavřena kupní smlouva o dané nemovitosti?
+-- Je uzavřena kupní smlouva o dané nemovitosti? Chceme ID, typ i polohu nemovitosti a informaci o stavu zadosti.
 SELECT nemovitosti_ID, typ_nemovitosti, poloha, stav FROM nemovitosti
     JOIN kupni_smlouvy
     ON nemovitosti.nemovitosti_ID = kupni_smlouvy.nemovitosti
     ORDER BY nemovitosti_ID ASC;
 
--- Jaké žádosti o prohlídku podali daní zákazníci?
+-- Jaké žádosti o prohlídku podali daní zákazníci? Chceme ID a jmeno zakaznika, ID a polohu zadane nemovitosti, pozadovany cas
+-- prohlidky a zda prohlidka probehla.
 SELECT zakaznici_id, jmeno, nemovitosti_ID, poloha, pozadovany_datum_a_cas_prohlidky, probehla FROM zadosti_o_prohlidku zad
     JOIN zakaznici zak ON zad.zakaznici = zak.zakaznici_id
     JOIN nemovitosti nem ON zad.nemovitosti = nem.nemovitosti_ID
@@ -238,18 +224,19 @@ SELECT zakaznici_id, jmeno, nemovitosti_ID, poloha, pozadovany_datum_a_cas_prohl
 -- Kolik zaměstnanců je na dané pozici?
 SELECT pozice, COUNT(*) pocet_zamestnancu FROM zamestnanci GROUP BY pozice;
 
--- Jaký majetek v nemovitostech má daný zákazník?
-SELECT jmeno, SUM(cena) majetek FROM nemovitosti nem
+-- Jaký majetek v nemovitostech má daný zákazník? Chceme ID a jmeno zakaznika a sumu jeho majetku.
+SELECT zakaznici_id, jmeno, SUM(cena) majetek FROM nemovitosti nem
     JOIN zakaznici_s_radnym_uctem zakr ON nem.vlastnik = zakr.zakaznici_id_s_radnym_uctem_id
     JOIN zakaznici zak ON zakr.zakaznici_id_s_radnym_uctem_id = zak.zakaznici_s_radnym_uctem_fk
-    GROUP BY jmeno;
+    GROUP BY zakaznici_id, jmeno;
 
--- Kteří zákazníci žádající o prohlídku nevlastní žádnou nemovitost a kdy byla žádost podána?
-SELECT jmeno, zadost_ID, datum_podani_zadosti FROM zakaznici zak
+-- Kteří zákazníci žádající o prohlídku nevlastní žádnou nemovitost a kdy byla jejich žádost podána? Chceme ID a jmeno zakaznika
+-- a datum podani jejich zadosti
+SELECT zakaznici_id, jmeno, datum_podani_zadosti FROM zakaznici zak
     JOIN zadosti_o_prohlidku zad ON zak.zakaznici_id = zad.zakaznici
     WHERE NOT EXISTS (SELECT * FROM zakaznici_s_radnym_uctem zakr
         WHERE zak.zakaznici_s_radnym_uctem_fk = zakr.zakaznici_id_s_radnym_uctem_id);
 
--- O které nabízené nemovitosti je zároveň zájem o prohlídku?
+-- Jake byly podany nabidky ke koupi nemovitosti, ke ktere jiz existuje zadost o prohlidku? Chceme ID nemovitosti, ID a vysi nabidek
 SELECT nabidka_ID, nemovitosti, vyse_nabidky FROM nabidky_ke_koupi
     WHERE nemovitosti IN (SELECT nemovitosti FROM zadosti_o_prohlidku);
