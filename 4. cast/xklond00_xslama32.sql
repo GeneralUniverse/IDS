@@ -348,3 +348,15 @@ SELECT * FROM zakaznici;
 BEGIN change_login(4, 'xklond00','supertajneheslo' ); END;
 -- po zmene
 SELECT * FROM zakaznici;
+
+-- PRIVILEGES -----------------------------------------------------------------------------------
+
+GRANT ALL on zakaznici_s_radnym_uctem TO XSLAMA32;
+GRANT ALL ON nemovitosti TO XSLAMA32;
+GRANT ALL  ON kupni_smlouvy TO XSLAMA32;
+GRANT DELETE ON zamestnanci TO XSLAMA32;
+GRANT INSERT ON zakaznici TO XSLAMA32;
+GRANT REFERENCES ON zadosti_o_prohlidku TO XSLAMA32;
+GRANT SELECT ON nabidky_ke_koupi TO XSLAMA32;
+GRANT EXECUTE ON change_login TO XSLAMA32;
+GRANT  EXECUTE ON show_offers_stats TO XSLAMA32;
