@@ -360,3 +360,31 @@ GRANT REFERENCES ON zadosti_o_prohlidku TO XSLAMA32;
 GRANT SELECT ON nabidky_ke_koupi TO XSLAMA32;
 GRANT EXECUTE ON change_login TO XSLAMA32;
 GRANT  EXECUTE ON show_offers_stats TO XSLAMA32;
+
+
+DROP INDEX nemov_podle_vlastnika;
+DROP INDEX zak_podle_rad_uctu;
+
+-- EXPLAIN PLAN ---------------------------------------------------------------------------------------------------
+
+EXPLAIN PLAN FOR
+SELECT zakaznici_id, jmeno, SUM(cena) majetek FROM nemovitosti nem
+    JOIN zakaznici_s_radnym_uctem zakr ON nem.vlastnik = zakr.zakaznici_id_s_radnym_uctem_id
+    JOIN zakaznici zak ON zakr.zakaznici_id_s_radnym_uctem_id = zak.zakaznici_s_radnym_uctem_fk
+    GROUP BY zakaznici_id, jmeno;
+
+-- explain plain pred optimalizaci
+SELECT * FROM TABLE(DBMS_XPLAN.DISPLAY);
+
+-- pouziti indexu pro optimalizovani tech tabulek, ve kterych dochazi k table access full
+CREATE INDEX nemov_podle_vlastnika ON nemovitosti(vlastnik);
+CREATE INDEX zak_podle_rad_uctu ON zakaznici(zakaznici_s_radnym_uctem_fk);
+
+EXPLAIN PLAN FOR
+SELECT zakaznici_id, jmeno, SUM(cena) majetek FROM nemovitosti nem
+    JOIN zakaznici_s_radnym_uctem zakr ON nem.vlastnik = zakr.zakaznici_id_s_radnym_uctem_id
+    JOIN zakaznici zak ON zakr.zakaznici_id_s_radnym_uctem_id = zak.zakaznici_s_radnym_uctem_fk
+    GROUP BY zakaznici_id, jmeno;
+
+--explain plan po optimalizaci
+SELECT * FROM TABLE(DBMS_XPLAN.DISPLAY);
